@@ -1,0 +1,25 @@
+type Account @entity {
+    id: ID!
+    transfersFrom: [Transfer!] @derivedFrom(field: "from")
+    transfersTo: [Transfer!] @derivedFrom(field: "to")
+}
+
+type Transfer @entity {
+    id: ID!
+    blockNumber: Int!
+    timestamp: DateTime!
+    txHash: String!
+    from: Account!
+    to: Account!
+    amount: BigInt!
+    token: Token!
+}
+
+type Token @entity {
+    id: ID!
+    name: String!
+    symbol: String!
+    totalSupply: BigInt!
+    decimals: Int!
+    transfers: [Transfer!] @derivedFrom(field: "token")
+}
