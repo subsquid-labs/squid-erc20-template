@@ -44,6 +44,10 @@
         "description": "Generate data access classes for an ABI file(s) in the ./abi folder",
         "cmd": ["squid-evm-typegen", "./src/abi", {"glob": "./abi/*.json"}, "--multicall"]
       },
+      "archives:ls": {
+        "description": "List the available archives",
+        "cmd": ["squid-archive-registry", "--type", "evm"]
+      },
       "process": {
         "description": "Load .env and start the squid processor",
         "deps": ["build", "migration:apply"],
