@@ -7,15 +7,17 @@ import {
     EvmBlock,
 } from '@subsquid/evm-processor'
 import {Store, TypeormDatabase} from '@subsquid/typeorm-store'
+import {lookupArchive} from '@subsquid/archive-registry'
 import * as erc20 from './abi/erc20'
 import {Account, Token, Transfer} from './model'
 
-const CONTRACT_ADDRESS = assertNotNull(process.env.CONTRACT_ADDRESS, 'Missing contract address')
-const CHAIN_NODE = assertNotNull(process.env.CHAIN_NODE, 'Missing chain node url')
+// replace with a ERC20 contract address
+const CONTRACT_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+const CHAIN_NODE = process.env.CHAIN_NODE || 'https://rpc.ankr.com/eth'
 
 const processor = new EvmBatchProcessor()
     .setDataSource({
-        archive: 'https://eth.archive.subsquid.io',
+        archive: lookupArchive('eth-mainnet'),
         chain: CHAIN_NODE,
     })
     .addLog(CONTRACT_ADDRESS, {
@@ -36,8 +38,6 @@ type Ctx = BatchHandlerContext<Store, Item>
 
 processor.run(new TypeormDatabase(), async (ctx) => {
     let transfersData: TransferEventData[] = []
-
-    ctx._chain.client.call('eth_blockNumber')
 
     for (let {header: block, items} of ctx.blocks) {
         for (let item of items) {
