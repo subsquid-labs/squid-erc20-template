@@ -2,6 +2,8 @@
 
 A squid template indexing ERC20 transfers. The squid fetches the historical `Transfer` event, decodes and persists to a `Transfer` table. A new entry is created in the `Account` table for each address that has interacted with the contract so that one can query the transfer history for each EVM address.
 
+Dependencies: NodeJS, Docker.
+
 ## Setup
 
 - Install Squid CLI:
@@ -18,10 +20,9 @@ Set the `CHAIN_NODE` env variable to an RPC endpoint. Use [secrets](https://docs
 
 ```bash
 npm ci
-sqd build
 # start a local Postgres
 sqd up
-# run src/processor.ts
+# build and run the processor
 sqd process
 
 # in a separate termimal
