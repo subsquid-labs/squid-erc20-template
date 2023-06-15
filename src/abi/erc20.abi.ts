@@ -160,6 +160,10 @@ export const ABI_JSON = [
         ]
     },
     {
+        "type": "fallback",
+        "stateMutability": "payable"
+    },
+    {
         "type": "event",
         "anonymous": false,
         "name": "Approval",
