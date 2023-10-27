@@ -1,3 +1,4 @@
+import {assertNotNull} from '@subsquid/util-internal'
 import {lookupArchive} from '@subsquid/archive-registry'
 import {
     BlockHeader,
@@ -10,24 +11,28 @@ import {
 import {Store} from '@subsquid/typeorm-store'
 import * as erc20 from './abi/erc20'
 
-// replace with a ERC20 contract address
-export const CONTRACT_ADDRESS = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+// Set at .env or replace with a ERC20 contract address
+export const CONTRACT_ADDRESS = assertNotNull(process.env.CONTRACT_ADDRESS)
+export const CONTRACT_DEPLOYED_AT = parseInt(assertNotNull(process.env.CONTRACT_DEPLOYED_AT))
 
 export const processor = new EvmBatchProcessor()
     .setDataSource({
-        // uncomment and set RPC_ENDPOONT to enable contract state queries.
-        // Both https and wss endpoints are supported.
-        // chain: process.env.RPC_ENDPOINT,
-
-        // Change the Archive endpoints for run the squid
-        // against the other EVM networks
-        // For a full list of supported networks and config options
-        // see https://docs.subsquid.io/develop-a-squid/evm-processor/configuration/
-
+        // Lookup archive by the network name in Subsquid registry
+        // See https://docs.subsquid.io/evm-indexing/supported-networks/
         archive: lookupArchive('eth-mainnet'),
-        chain: 'https://rpc.ankr.com/eth',
+        // Chain RPC endpoint is required for
+        //  - indexing unfinalized blocks https://docs.subsquid.io/basics/unfinalized-blocks/
+        //  - querying the contract state https://docs.subsquid.io/evm-indexing/query-state/
+        chain: {
+            // Set the URL via .env for local runs or via secrets when deploying to Subsquid Cloud
+            // https://docs.subsquid.io/deploy-squid/env-variables/
+            url: assertNotNull(process.env.RPC_ETH_HTTP),
+            // More RPC connection options at https://docs.subsquid.io/evm-indexing/configuration/initialization/#set-data-source
+            rateLimit: 10
+        }
+
     })
-    .setFinalityConfirmation(10)
+    .setFinalityConfirmation(75)
     .setFields({
         log: {
             topics: true,
@@ -41,6 +46,9 @@ export const processor = new EvmBatchProcessor()
         address: [CONTRACT_ADDRESS],
         topic0: [erc20.events.Transfer.topic],
         transaction: true,
+    })
+    .setBlockRange({
+        from: CONTRACT_DEPLOYED_AT
     })
 
 export type Fields = EvmBatchProcessorFields<typeof processor>

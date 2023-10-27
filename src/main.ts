@@ -70,7 +70,7 @@ async function saveTransfers(ctx: Context, transfersData: TransferEventData[]) {
 }
 
 async function fetchToken(ctx: Context, address: string) {
-    let block = ctx.blocks[ctx.blocks.length].header
+    let block = ctx.blocks[ctx.blocks.length-1].header
 
     let contract = new erc20.Contract(ctx, block, address)
 
