@@ -13,4 +13,4 @@ deploy:
   processor:
     cmd: [ "sqd", "process:prod" ]
   api:
-    cmd: [ "sqd", "serve" ]
+    cmd: [ "sqd", "serve:prod" ]
