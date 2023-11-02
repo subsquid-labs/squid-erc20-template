@@ -14,7 +14,7 @@ npm i -g @subsquid/cli
 
 - Update the `CONTRACT_ADDRESS` and `CONTRACT_DEPLOYED_AT` in `.env`. By default, the [USDC contract](https://etherscan.io/token/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48) is indexed
 - Inspect the list of the available archives with `sqd archives:ls` and choose the network if necessary
-Set the `CHAIN_NODE` env variable to an RPC endpoint. Use [secrets](https://docs.subsquid.io/deploy-squid/env-variables/#secrets) when deploying the squid to Subsquid Cloud.
+Set the `RPC_ENDPOINT` env variable to a chain node RPC URL. Use [secrets](https://docs.subsquid.io/deploy-squid/env-variables/#secrets) when deploying the squid to Subsquid Cloud.
 
 ## Run
 
@@ -22,11 +22,15 @@ Set the `CHAIN_NODE` env variable to an RPC endpoint. Use [secrets](https://docs
 npm ci
 # start a local Postgres
 sqd up
-# build and run the processor
-sqd process
+# build the squid
+sqd build
+# start both the squid processor and the GraphQL server
+sqd run .
+```
+A GraphiQL playground will be available at [localhost:4350/graphql](http://localhost:4350/graphql).
 
-# in a separate termimal
-# start the GraphQL API server
+You can also start squid services one by one:
+```bash
+sqd process
 sqd serve
-sqd open http://localhost:4350/graphql
 ```
