@@ -1,5 +1,4 @@
 import {assertNotNull} from '@subsquid/util-internal'
-import {lookupArchive} from '@subsquid/archive-registry'
 import {
     BlockHeader,
     DataHandlerContext,
@@ -16,21 +15,18 @@ export const CONTRACT_ADDRESS = assertNotNull(process.env.CONTRACT_ADDRESS)
 export const CONTRACT_DEPLOYED_AT = parseInt(assertNotNull(process.env.CONTRACT_DEPLOYED_AT))
 
 export const processor = new EvmBatchProcessor()
-    .setDataSource({
-        // Lookup archive by the network name in Subsquid registry
-        // See https://docs.subsquid.io/evm-indexing/supported-networks/
-        archive: lookupArchive('eth-mainnet'),
-        // Chain RPC endpoint is required for
-        //  - indexing unfinalized blocks https://docs.subsquid.io/basics/unfinalized-blocks/
-        //  - querying the contract state https://docs.subsquid.io/evm-indexing/query-state/
-        chain: {
-            // Set the URL via .env for local runs or via secrets when deploying to Subsquid Cloud
-            // https://docs.subsquid.io/deploy-squid/env-variables/
-            url: assertNotNull(process.env.RPC_ENDPOINT),
-            // More RPC connection options at https://docs.subsquid.io/evm-indexing/configuration/initialization/#set-data-source
-            rateLimit: 10
-        }
-
+    // Lookup archive by the network name in Subsquid registry
+    // See https://docs.subsquid.io/evm-indexing/supported-networks/
+    .setGateway('https://v2.archive.subsquid.io/network/ethereum-mainnet')
+    // Chain RPC endpoint is required for
+    //  - indexing unfinalized blocks https://docs.subsquid.io/basics/unfinalized-blocks/
+    //  - querying the contract state https://docs.subsquid.io/evm-indexing/query-state/
+    .setRpcEndpoint({
+        // Set the URL via .env for local runs or via secrets when deploying to Subsquid Cloud
+        // https://docs.subsquid.io/deploy-squid/env-variables/
+        url: assertNotNull(process.env.RPC_ENDPOINT),
+        // More RPC connection options at https://docs.subsquid.io/evm-indexing/configuration/initialization/#set-data-source
+        rateLimit: 10
     })
     .setFinalityConfirmation(75)
     .setFields({
