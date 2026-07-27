@@ -8,6 +8,10 @@ import {CONTRACT_ADDRESS, Context, dataSource, rpc} from './processor'
 
 // TypeormDatabase stores the data to Postgres and handles hot-block rollbacks on forks.
 // run() drives the processing loop, passing each batch of data to the handler.
+// Reading on-chain contract state (token balances, totalSupply, prices, …) during indexing
+// means constructing an RpcClient and calling the squid-evm-typegen Contract classes — the
+// Portal handler has no built-in chain access. How-to:
+// https://docs.sqd.dev/en/sdk/squid-sdk/evm/reference/evm-typegen/direct-rpc-queries
 run(dataSource, new TypeormDatabase({supportHotBlocks: true}), async (ctx) => {
     // augmentBlock() enriches raw block items with ids and navigation helpers.
     let blocks = ctx.blocks.map(augmentBlock)
